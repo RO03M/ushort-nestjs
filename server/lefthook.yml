@@ -1,0 +1,17 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+#
+pre-push:
+  jobs:
+    - name: Build
+      tags:
+        - frontend
+        - security
+      run: yarn build
+
+pre-commit:
+  parallel: true
+  jobs:
+    - run: yarn lint {staged_files}
