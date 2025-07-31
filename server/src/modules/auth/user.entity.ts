@@ -12,7 +12,7 @@ import { Hash } from "../../utils/hash";
 export class User {
 	[EntityRepositoryType]?: BaseRepository<User>;
 
-	@PrimaryKey()
+	@PrimaryKey({ type: "uuid" })
 	public id: string;
 
 	@Property()
@@ -20,9 +20,6 @@ export class User {
 
 	@Property()
 	public email: string;
-
-	@Property()
-	public username: string;
 
 	@Property({ hidden: true })
 	public password: string;
@@ -36,12 +33,11 @@ export class User {
 	@Property({ type: "timestamp" })
 	public deleted_at: Date | null = null;
 
-	static make(name: string, email: string, username: string, password: string) {
+	static make(name: string, email: string, password: string) {
 		const user = new User();
 		user.id = randomUUID();
 		user.name = name;
 		user.email = email;
-		user.username = username;
 		user.password = Hash.make(password);
 
 		return user;

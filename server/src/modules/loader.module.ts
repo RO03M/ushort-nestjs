@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { AuthModule } from "./auth/auth.module";
-import { QueueExampleModule } from "./queue-example/queue-example.module";
+import { UrlsModule } from "./urls/urls.module";
 
 @Module({
-	imports: [AuthModule, QueueExampleModule]
+	imports: [AuthModule, UrlsModule]
 })
 export class LoaderModule {}

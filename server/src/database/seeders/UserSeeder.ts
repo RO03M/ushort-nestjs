@@ -12,7 +12,6 @@ export class UserSeeder extends Seeder {
 				User.make(
 					faker.person.fullName(),
 					faker.internet.email(),
-					faker.internet.username(),
 					faker.internet.password()
 				)
 			);

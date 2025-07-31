@@ -1,8 +1,14 @@
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
 
 export class BaseRepository<
 	Entity extends object
 > extends EntityRepository<Entity> {
+	public async exists(where: FilterQuery<Entity>) {
+		const count = await this.createQueryBuilder().where(where).count();
+		console.log(count);
+		return count !== 0;
+	}
+
 	public noTrash() {
 		return this.createQueryBuilder().where({ deleted_at: null });
 	}

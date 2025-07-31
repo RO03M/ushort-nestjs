@@ -2,6 +2,7 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import {
 	Body,
+	ConflictException,
 	Controller,
 	Get,
 	Inject,
@@ -32,14 +33,20 @@ export class AuthController {
 
 	@Post("/register")
 	public async register(@Body() body: RegisterDto) {
-		const user = User.make(body.name, body.email, body.username, body.password);
+		const userExists = await this.em.getRepository(User).exists({ email: body.email });
 
-		const result = await this.em
+		if (userExists) {
+			throw new ConflictException(`Um usuário com e-mail ${body.email} já existe`);
+		}
+
+		const user = User.make(body.name, body.email, body.password);
+
+		await this.em
 			.createQueryBuilder(User)
 			.insert(user)
 			.execute("run", false);
 
-		return result;
+		return user;
 	}
 
 	@Post("login")
@@ -94,25 +101,5 @@ export class AuthController {
 		res.send({
 			accessToken
 		});
-	}
-
-	@Get()
-	public async foo() {
-		const user = User.make("teste", "teste@teste.com", "username", "password");
-		await this.em.createQueryBuilder(User).insert(user);
-
-		const res = await this.em
-			.createQueryBuilder(User)
-			.select("*")
-			.execute("all");
-
-		return res;
-	}
-
-	@Get("no-trash")
-	public async notrash(@Query("page") page: string) {
-		const res = await this.em.getRepository(User).paginate(15, +page).execute();
-
-		return res;
 	}
 }

@@ -65,7 +65,6 @@ export class AuthGuard implements CanActivate {
 			user.id = cachedUser.id;
 			user.name = cachedUser.name;
 			user.email = cachedUser.email;
-			user.username = cachedUser.username;
 
 			return user;
 		}
