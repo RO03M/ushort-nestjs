@@ -15,6 +15,7 @@ import { safe } from "../../../utils/safe";
 import { Duration } from "../../../utils/time";
 import { AccessToken, AuthedRequest } from "../types";
 import { User } from "../user.entity";
+import { Reflector } from "@nestjs/core";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -22,15 +23,22 @@ export class AuthGuard implements CanActivate {
 		private jwtService: JwtService,
 		@Inject(CACHE_MANAGER) private readonly cache: Cache,
 		private readonly em: EntityManager,
-		private readonly config: ConfigService
-	) {}
+		private readonly config: ConfigService,
+		private readonly reflector: Reflector
+	) { }
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
+		const isOptional = this.reflector.get<boolean>("isOptional", context.getHandler()) ?? false;
+
 		const request: AuthedRequest = context.switchToHttp().getRequest();
 
 		const accessToken = this.getAccessToken(request);
 
 		if (accessToken === null) {
+			if (isOptional) {
+				return true;
+			}
+
 			throw new UnauthorizedException("Please login to access this");
 		}
 
@@ -41,6 +49,10 @@ export class AuthGuard implements CanActivate {
 		);
 
 		if (jwtResult.error !== null || !("uid" in jwtResult.data)) {
+			if (isOptional) {
+				return true;
+			}
+
 			throw new UnauthorizedException("Invalid access token");
 		}
 
@@ -48,6 +60,10 @@ export class AuthGuard implements CanActivate {
 		const user = await this.getCachedUser(uid);
 
 		if (user === null) {
+			if (isOptional) {
+				return true;
+			}
+
 			throw new UnauthorizedException("Invalid user");
 		}
 
@@ -71,9 +87,13 @@ export class AuthGuard implements CanActivate {
 
 		const user = await this.em
 			.createQueryBuilder(User)
-			.select(["id", "name", "email", "username"])
+			.select(["id", "name", "email"])
 			.where({ id: uid })
 			.execute("get", false);
+
+		if (!user) {
+			return null;
+		}
 
 		await this.cache.set(cacheKey, user, Duration.Second * 150);
 

@@ -5,7 +5,7 @@ export class BaseRepository<
 > extends EntityRepository<Entity> {
 	public async exists(where: FilterQuery<Entity>) {
 		const count = await this.createQueryBuilder().where(where).count();
-		console.log(count);
+
 		return count !== 0;
 	}
 

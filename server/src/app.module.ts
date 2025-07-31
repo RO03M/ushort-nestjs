@@ -13,7 +13,7 @@ config();
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({ isGlobal: true }),
 		DatabaseModule,
 		RedisModule,
 		JwtModule.register({
@@ -42,4 +42,4 @@ config();
 	controllers: [AppController],
 	providers: [AppService]
 })
-export class AppModule {}
+export class AppModule { }
