@@ -4,11 +4,9 @@ import {
 	Body,
 	ConflictException,
 	Controller,
-	Get,
 	Inject,
 	NotFoundException,
 	Post,
-	Query,
 	Res,
 	UnauthorizedException
 } from "@nestjs/common";
@@ -29,7 +27,7 @@ export class AuthController {
 		private readonly jwt: JwtService,
 		@Inject(CACHE_MANAGER)
 		private readonly cache: Cache
-	) {}
+	) { }
 
 	@Post("/register")
 	public async register(@Body() body: RegisterDto) {
