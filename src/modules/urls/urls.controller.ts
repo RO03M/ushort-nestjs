@@ -48,7 +48,7 @@ export class UrlsController {
 
         return {
             url: url,
-            shortenedUrl: `${request.headers.host}/${url.alias}`
+            shortenedUrl: `${request.protocol}://${request.headers.host}/${url.alias}`
         };
     }
 }

@@ -60,3 +60,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: ushort
+  k6:
+    image: grafana/k6
+    volumes:
+      - ./test/stress:/scripts
