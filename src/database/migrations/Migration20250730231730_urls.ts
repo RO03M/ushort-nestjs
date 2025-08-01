@@ -7,6 +7,7 @@ export class Migration20250730231730_urls extends Migration {
       table.uuid("id").primary();
       table.text("long_url").notNullable();
       table.string("alias", 50).notNullable();
+      table.integer("visits").defaultTo(0);
       table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").nullable();
       table.timestamps();
       table.timestamp("deleted_at").nullable();

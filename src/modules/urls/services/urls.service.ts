@@ -1,13 +1,11 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { ConflictException, Injectable } from "@nestjs/common";
-import { Url } from "../entities/url.entity";
 import { genRandomChars } from "../../../utils/random";
+import { Url } from "../entities/url.entity";
 
 @Injectable()
 export class UrlsService {
-    constructor(
-        private readonly em: EntityManager
-    ) { }
+    constructor(private readonly em: EntityManager) { }
 
     public async createWithRandomAlias(longUrl: string, userId?: string) {
         const uniqueAlias = await this.generateUniqueAlias();
@@ -19,11 +17,15 @@ export class UrlsService {
         return url;
     }
 
-    public async createWithPredefinedAlias(longUrl: string, alias: string, userId?: string) {
+    public async createWithPredefinedAlias(
+        longUrl: string,
+        alias: string,
+        userId?: string
+    ) {
         const exists = await this.aliasExists(alias);
 
         if (exists) {
-            throw new ConflictException(`O apelido ${alias} já está em uso`);
+            throw new ConflictException(`Alias ${alias} already exist`);
         }
 
         const url = Url.make(longUrl, alias, userId);
@@ -34,7 +36,7 @@ export class UrlsService {
     }
 
     private async aliasExists(alias: string) {
-        return await this.em.getRepository(Url).exists({ alias })
+        return await this.em.getRepository(Url).exists({ alias });
     }
 
     private async generateUniqueAlias(attempts = 20) {
@@ -49,6 +51,10 @@ export class UrlsService {
             }
         }
 
-        throw new Error("Houve uma falha ao criar a url, tente novamente.")
+        throw new Error(`Couldn't create a unique random alias after ${attempts} tries. Try again`);
+    }
+
+    public isAliasValid(alias: string) {
+        return !/[^a-zA-Z0-9 ]/.test(alias);
     }
 }
