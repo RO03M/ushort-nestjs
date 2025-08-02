@@ -1,12 +1,20 @@
-import { EntityManager } from "@mikro-orm/postgresql";
-import { Controller, Get, HttpStatus, NotFoundException, Param, Res } from "@nestjs/common";
-import { Url } from "./entities/url.entity";
+import {
+    Controller,
+    Get,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    Res
+} from "@nestjs/common";
 import { Response } from "express";
+import { UrlJobsProducer } from "./jobs/url-jobs.producer";
+import { UrlsService } from "./services/urls.service";
 
 @Controller()
 export class RedirectUrlController {
     constructor(
-        private readonly em: EntityManager
+        private readonly urlsService: UrlsService,
+        private readonly urlQueueProducer: UrlJobsProducer
     ) { }
 
     @Get("/:alias")
@@ -14,12 +22,15 @@ export class RedirectUrlController {
         @Param("alias") alias: string,
         @Res() res: Response
     ) {
-        const url = await this.em.createQueryBuilder(Url).select(["long_url"]).where({ alias }).execute("get", false);
+        const longUrl = await this.urlsService.getLongUrlFromAlias(alias);
 
-        if (!url) {
+        if (!longUrl) {
             throw new NotFoundException("Url não encontrada");
         }
 
-        res.redirect(HttpStatus.MOVED_PERMANENTLY, url.long_url);
+
+        await this.urlQueueProducer.incrementAccessCount(alias);
+
+        res.redirect(HttpStatus.MOVED_PERMANENTLY, longUrl);
     }
 }

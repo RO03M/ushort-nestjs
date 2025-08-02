@@ -2,10 +2,14 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { genRandomChars } from "../../../utils/random";
 import { Url } from "../entities/url.entity";
+import { UrlCacheService } from "./url-cache.service";
 
 @Injectable()
 export class UrlsService {
-    constructor(private readonly em: EntityManager) { }
+    constructor(
+        private readonly em: EntityManager,
+        private readonly urlCacheService: UrlCacheService
+    ) { }
 
     public async createWithRandomAlias(longUrl: string, userId?: string) {
         const uniqueAlias = await this.generateUniqueAlias();
@@ -51,10 +55,34 @@ export class UrlsService {
             }
         }
 
-        throw new Error(`Couldn't create a unique random alias after ${attempts} tries. Try again`);
+        throw new Error(
+            `Couldn't create a unique random alias after ${attempts} tries. Try again`
+        );
     }
 
     public isAliasValid(alias: string) {
         return !/[^a-zA-Z0-9 ]/.test(alias);
+    }
+
+    public async getLongUrlFromAlias(alias: string) {
+        const cachedUrl = await this.urlCacheService.getCached(alias);
+
+        if (cachedUrl && typeof cachedUrl === "string") {
+            return cachedUrl;
+        }
+
+        const url = await this.em
+            .createQueryBuilder(Url)
+            .select(["long_url"])
+            .where({ alias })
+            .execute("get", false);
+
+        if (!url) {
+            return null;
+        }
+
+        await this.urlCacheService.cacheUrl(alias, url.long_url);
+
+        return url.long_url;
     }
 }

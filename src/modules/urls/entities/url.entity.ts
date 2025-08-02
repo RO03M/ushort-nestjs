@@ -1,11 +1,15 @@
-import { Entity, EntityRepositoryType, PrimaryKey, Property } from "@mikro-orm/core";
-import { BaseRepository } from "../../../database/base-repository";
-import { User } from "../../auth/user.entity";
 import { randomUUID } from "node:crypto";
+import {
+    Entity,
+    EntityRepositoryType,
+    PrimaryKey,
+    Property
+} from "@mikro-orm/core";
+import { UrlRepository } from "../repositories/url.repository";
 
-@Entity({ tableName: "urls", repository: () => BaseRepository<User> })
+@Entity({ tableName: "urls", repository: () => UrlRepository })
 export class Url {
-    [EntityRepositoryType]?: BaseRepository<Url>;
+    [EntityRepositoryType]?: UrlRepository;
 
     @PrimaryKey({ type: "uuid" })
     public id: string;
@@ -15,6 +19,9 @@ export class Url {
 
     @Property()
     public alias: string;
+
+    @Property()
+    public visits: number;
 
     @Property()
     public user_id: string | null;

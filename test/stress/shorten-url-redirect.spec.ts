@@ -39,17 +39,9 @@ export function setup() {
 }
 
 export default function (shortenUrl: string) {
-	const response = http.get(shortenUrl);
-	console.log(response.status, response.status_text);
-	// check(response, {
-	// 	""
-	// })
-	// const randomId = Math.floor(Math.random() * 15) + 1;
-	// const body = {
-	// 	id: randomId
-	// };
+	const response = http.get(shortenUrl, { redirects: 0 });
 
-	// http.post(`${BASE_URL}/rojasbicha`, JSON.stringify(body), {
-	// 	headers: { "Content-Type": "application/json" }
-	// });
+	check(response, {
+		"Http code is moved permanently (301)": () => response.status === 301
+	});
 }
