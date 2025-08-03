@@ -9,3 +9,11 @@ Winston para fazer os logs dos erros (tratar no exception filter e voltar um err
 
 Logs? Se sim utilizar fila
 Lock no alias para previnir duplicado? prioridade baixa
+
+
+rate limiting
+swagger -> url blacklist
+
+testes:
+- criação e login de users
+- criação e acesso de uma url curta

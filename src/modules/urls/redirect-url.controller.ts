@@ -28,6 +28,6 @@ export class RedirectUrlController {
 
         await this.urlsService.incrementUrlCounter(alias);
 
-        res.redirect(HttpStatus.MOVED_PERMANENTLY, longUrl);
+        res.redirect(HttpStatus.TEMPORARY_REDIRECT, longUrl);
     }
 }

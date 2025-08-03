@@ -2,21 +2,28 @@ import {
     BadRequestException,
     Body,
     Controller,
+    ForbiddenException,
+    NotFoundException,
+    Patch,
     Post,
     Req
 } from "@nestjs/common";
 import { Request } from "express";
 import { slug } from "../../utils/slug";
 import { CurrentUser } from "../auth/decorators/current-user";
+import { IsLogged } from "../auth/decorators/is-logged";
 import { UseOptionalAuth } from "../auth/decorators/use-optional-auth";
 import { User } from "../auth/user.entity";
 import { CreateUrlDto } from "./dto/create-url.dto";
+import { UpdateUrlDto } from "./dto/update-url.dto";
 import { Url } from "./entities/url.entity";
 import { UrlsService } from "./services/urls.service";
 
 @Controller("/urls")
 export class UrlsController {
-    constructor(private readonly urlsService: UrlsService) { }
+    constructor(
+        private readonly urlsService: UrlsService
+    ) { }
 
     @Post()
     @UseOptionalAuth()
@@ -50,5 +57,42 @@ export class UrlsController {
             url: url,
             shortenedUrl: `${request.protocol}://${request.headers.host}/${url.alias}`
         };
+    }
+
+    @Patch("/update")
+    @IsLogged()
+    public async changeUrl(
+        @Body() body: UpdateUrlDto,
+        @CurrentUser() user: User
+    ) {
+        const url = await this.urlsService.findUrlByAlias(body.alias);
+
+        if (!url) {
+            throw new NotFoundException("Url with this alias doesn't exist");
+        }
+
+        if (url?.user_id !== user.id) {
+            throw new ForbiddenException("You cannot update this url, since it isn't yours");
+        }
+
+        if (!body.newAlias && !body.newLongUrl) {
+            return { url };
+        }
+
+        if (body.newAlias !== undefined) {
+            if (!this.urlsService.isAliasValid(body.newAlias)) {
+                throw new BadRequestException("Invalid alias format");
+            }
+
+            url.alias = slug(body.newAlias);
+        }
+
+        if (body.newLongUrl) {
+            url.long_url = body.newLongUrl;
+        }
+
+        await this.urlsService.updateUrl(body.alias, url);
+
+        return { url };
     }
 }

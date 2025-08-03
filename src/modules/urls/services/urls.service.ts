@@ -91,4 +91,29 @@ export class UrlsService {
     public async incrementUrlCounter(alias: string) {
         await this.redis.hincrby(`urls:counters`, alias, 1);
     }
+
+    public async findUrlByAlias(alias: string) {
+        const url: Url | null = await this.em.createQueryBuilder(Url)
+            .select(["id", "alias", "long_url", "user_id"])
+            .where({ alias: alias })
+            .execute("get", true);
+
+        return url;
+    }
+
+    public async updateUrl(oldAlias: string, url: Url) {
+        const response = await this.em.createQueryBuilder(Url)
+            .update({ alias: url.alias, long_url: url.long_url, updated_at: new Date() })
+            .execute("run", false);
+
+        if (response.affectedRows !== 0) {
+            await this.urlCacheService.invalidateCache(oldAlias);
+        }
+
+        return response;
+    }
+
+    public async softDeleteUrl() {
+
+    }
 }
