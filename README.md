@@ -121,7 +121,15 @@ k6 run test/stress/shorten-url-redirect.spec.ts
 
 Esse teste de carga criar algumas urls no começo e depois sai acessando as mesmas, testando a capacidade da aplicação suportar alta demanda sem se sobrecarregar
 
+# Design da aplicação
 
+<p align="center">
+    <img
+        width="90%"
+        src="docs/system-design.png"
+        alt="Resultados do k6"
+    />
+</p>
 
 # Tecnologias Utilizadas
 
