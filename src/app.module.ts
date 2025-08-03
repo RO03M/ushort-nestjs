@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { ScheduleModule } from "@nestjs/schedule";
 import { config } from "dotenv";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -23,6 +24,7 @@ config();
 				expiresIn: "1d"
 			}
 		}),
+		ScheduleModule.forRoot(),
 		BullModule.forRoot({
 			connection: {
 				url: buildRedisUri()

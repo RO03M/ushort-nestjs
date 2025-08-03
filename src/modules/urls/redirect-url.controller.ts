@@ -7,14 +7,12 @@ import {
     Res
 } from "@nestjs/common";
 import { Response } from "express";
-import { UrlJobsProducer } from "./jobs/url-jobs.producer";
 import { UrlsService } from "./services/urls.service";
 
 @Controller()
 export class RedirectUrlController {
     constructor(
-        private readonly urlsService: UrlsService,
-        private readonly urlQueueProducer: UrlJobsProducer
+        private readonly urlsService: UrlsService
     ) { }
 
     @Get("/:alias")
@@ -28,8 +26,7 @@ export class RedirectUrlController {
             throw new NotFoundException("Url não encontrada");
         }
 
-
-        await this.urlQueueProducer.incrementAccessCount(alias);
+        await this.urlsService.incrementUrlCounter(alias);
 
         res.redirect(HttpStatus.MOVED_PERMANENTLY, longUrl);
     }

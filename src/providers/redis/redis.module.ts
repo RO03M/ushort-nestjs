@@ -2,7 +2,7 @@ import { createKeyv } from "@keyv/redis";
 import { CacheModule } from "@nestjs/cache-manager";
 import { Global, Module } from "@nestjs/common";
 import { config } from "dotenv";
-import { redisClientProvider } from "./redis-client";
+import { redisProvider } from "./redis.provider";
 
 config();
 
@@ -22,7 +22,7 @@ export function buildRedisUri() {
 			stores: [createKeyv(buildRedisUri())]
 		})
 	],
-	providers: [redisClientProvider],
-	exports: [redisClientProvider]
+	providers: [redisProvider],
+	exports: [redisProvider]
 })
-export class RedisModule {}
+export class RedisModule { }

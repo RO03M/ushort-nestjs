@@ -4,8 +4,9 @@ import { Injectable } from "@nestjs/common";
 import { Job } from "bullmq";
 import { Url } from "../entities/url.entity";
 
-type IncrementAccessCountJob = {
+export type UpdateAccessCountJob = {
     alias: string;
+    increaseBy: number;
 };
 
 @Processor("urls")
@@ -15,7 +16,7 @@ export class UrlJobsProcessor extends WorkerHost {
         super();
     }
 
-    public async incrementAccessCountJob(job: Job<IncrementAccessCountJob>) {
+    public async updateAccessCountJob(job: Job<UpdateAccessCountJob>) {
         const data = job.data;
 
         if (!data.alias) {
@@ -24,15 +25,15 @@ export class UrlJobsProcessor extends WorkerHost {
 
         await this.em
             .getRepository(Url)
-            .incrementAccessCount({ alias: job.data.alias });
+            .incrementAccessCount({ alias: data.alias }, data.increaseBy);
 
         await job.updateProgress(100);
     }
 
     public async process(job: Job) {
         switch (job.name) {
-            case "increment-access-count":
-                await this.incrementAccessCountJob(job);
+            case "update-access-count":
+                await this.updateAccessCountJob(job);
                 break;
         }
     }

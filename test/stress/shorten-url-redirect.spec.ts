@@ -18,8 +18,9 @@ export const options = {
 
 const PORT = 3000;
 const BASE_URL = `http://localhost:${PORT}`;
+const shortenedUrls: string[] = [];
 
-export function setup() {
+function createShortenedUrl() {
 	const commonUrl = "https://google.com";
 	const body = {
 		longUrl: commonUrl
@@ -35,10 +36,28 @@ export function setup() {
 		}
 	});
 
-	return (responseBody as Record<string, unknown>)?.shortenedUrl ?? "";
+	const shortenUrl = (responseBody as Record<string, string>)?.shortenedUrl ?? null;
+
+	if (!shortenUrl) {
+		return;
+	}
+
+	shortenedUrls.push(shortenUrl);
 }
 
-export default function (shortenUrl: string) {
+export function setup() {
+	for (let i = 0; i < 60; i++) {
+		createShortenedUrl();
+	}
+}
+
+export default function () {
+	const shortenUrl = shortenedUrls[Math.floor(Math.random() * shortenedUrls.length)];
+
+	if (!shortenUrl) {
+		createShortenedUrl();
+		return;
+	}
 	const response = http.get(shortenUrl, { redirects: 0 });
 
 	check(response, {

@@ -1,5 +1,6 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Inject, Injectable } from "@nestjs/common";
+import Redis from "ioredis";
 import { genRandomChars } from "../../../utils/random";
 import { Url } from "../entities/url.entity";
 import { UrlCacheService } from "./url-cache.service";
@@ -8,7 +9,8 @@ import { UrlCacheService } from "./url-cache.service";
 export class UrlsService {
     constructor(
         private readonly em: EntityManager,
-        private readonly urlCacheService: UrlCacheService
+        private readonly urlCacheService: UrlCacheService,
+        @Inject("REDIS") private readonly redis: Redis
     ) { }
 
     public async createWithRandomAlias(longUrl: string, userId?: string) {
@@ -84,5 +86,9 @@ export class UrlsService {
         await this.urlCacheService.cacheUrl(alias, url.long_url);
 
         return url.long_url;
+    }
+
+    public async incrementUrlCounter(alias: string) {
+        await this.redis.hincrby(`urls:counters`, alias, 1);
     }
 }
