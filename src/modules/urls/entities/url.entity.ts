@@ -41,6 +41,8 @@ export class Url {
         url.long_url = longUrl;
         url.alias = alias;
         url.user_id = userId ?? null;
+        url.created_at = new Date();
+        url.updated_at = new Date();
 
         return url;
     }

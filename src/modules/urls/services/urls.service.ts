@@ -63,7 +63,7 @@ export class UrlsService {
     }
 
     public isAliasValid(alias: string) {
-        return !/[^a-zA-Z0-9 ]/.test(alias);
+        return !/[^a-zA-Z0-9 -]/.test(alias);
     }
 
     public async getLongUrlFromAlias(alias: string) {
@@ -74,9 +74,10 @@ export class UrlsService {
         }
 
         const url = await this.em
-            .createQueryBuilder(Url)
+            .getRepository(Url)
+            .noTrash()
             .select(["long_url"])
-            .where({ alias })
+            .andWhere({ alias })
             .execute("get", false);
 
         if (!url) {
@@ -104,6 +105,7 @@ export class UrlsService {
     public async updateUrl(oldAlias: string, url: Url) {
         const response = await this.em.createQueryBuilder(Url)
             .update({ alias: url.alias, long_url: url.long_url, updated_at: new Date() })
+            .where({ alias: oldAlias })
             .execute("run", false);
 
         if (response.affectedRows !== 0) {
@@ -113,7 +115,18 @@ export class UrlsService {
         return response;
     }
 
-    public async softDeleteUrl() {
+    public async softDeleteUrl(alias: string) {
+        const response = await this.em.createQueryBuilder(Url)
+            .update({ deleted_at: new Date() })
+            .where({ alias: alias })
+            .execute("run", false);
 
+        const success = response.affectedRows !== 0;
+
+        if (success) {
+            await this.urlCacheService.invalidateCache(alias);
+        }
+
+        return success;
     }
 }

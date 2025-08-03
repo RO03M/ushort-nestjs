@@ -2,8 +2,10 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     ForbiddenException,
     NotFoundException,
+    Param,
     Patch,
     Post,
     Req
@@ -94,5 +96,25 @@ export class UrlsController {
         await this.urlsService.updateUrl(body.alias, url);
 
         return { url };
+    }
+
+    @Delete("/:alias")
+    @IsLogged()
+    public async deleteUrl(@Param("alias") alias: string, @CurrentUser() user: User) {
+        const url = await this.urlsService.findUrlByAlias(alias);
+
+        if (!url) {
+            throw new NotFoundException("Url with this alias doesn't exist");
+        }
+
+        if (url?.user_id !== user.id) {
+            throw new ForbiddenException("You cannot delete this url, since it isn't yours");
+        }
+
+        const deleted = await this.urlsService.softDeleteUrl(alias);
+
+        return {
+            success: deleted
+        };
     }
 }
