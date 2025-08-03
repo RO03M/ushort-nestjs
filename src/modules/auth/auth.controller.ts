@@ -17,6 +17,8 @@ import { Hash } from "../../utils/hash";
 import { Duration, sleep } from "../../utils/time";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { ApplyLoginSwagger } from "./swagger/login-swagger";
+import { ApplyRegisterSwagger } from "./swagger/register-swagger";
 import { AccessToken } from "./types";
 import { User } from "./user.entity";
 
@@ -30,24 +32,27 @@ export class AuthController {
 	) { }
 
 	@Post("/register")
+	@ApplyRegisterSwagger()
 	public async register(@Body() body: RegisterDto) {
-		const userExists = await this.em.getRepository(User).exists({ email: body.email });
+		const userExists = await this.em
+			.getRepository(User)
+			.exists({ email: body.email });
 
 		if (userExists) {
-			throw new ConflictException(`Um usuário com e-mail ${body.email} já existe`);
+			throw new ConflictException(
+				`A user with the email ${body.email} already exists`
+			);
 		}
 
 		const user = User.make(body.name, body.email, body.password);
 
-		await this.em
-			.createQueryBuilder(User)
-			.insert(user)
-			.execute("run", false);
+		await this.em.createQueryBuilder(User).insert(user).execute("run", false);
 
 		return user;
 	}
 
 	@Post("login")
+	@ApplyLoginSwagger()
 	public async login(@Body() body: LoginDto, @Res() res: Response) {
 		const user = await this.em
 			.createQueryBuilder(User)
