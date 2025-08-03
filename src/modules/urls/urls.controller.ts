@@ -21,15 +21,18 @@ import { CreateUrlDto } from "./dto/create-url.dto";
 import { UpdateUrlDto } from "./dto/update-url.dto";
 import { Url } from "./entities/url.entity";
 import { UrlsService } from "./services/urls.service";
+import { ApplyCreateUrlSwagger } from "./swagger/create-swagger";
+import { ApplyDeleteUrlSwagger } from "./swagger/delete-swagger";
+import { ApplyMyUrlsSwagger } from "./swagger/my-urls-swagger";
+import { ApplyUpdateUrlSwagger } from "./swagger/update-swagger";
 
 @Controller("/urls")
 export class UrlsController {
-    constructor(
-        private readonly urlsService: UrlsService
-    ) { }
+    constructor(private readonly urlsService: UrlsService) { }
 
     @Post()
     @UseOptionalAuth()
+    @ApplyCreateUrlSwagger()
     public async create(
         @Body() body: CreateUrlDto,
         @CurrentUser() user: User | undefined,
@@ -64,6 +67,7 @@ export class UrlsController {
 
     @Patch("/update")
     @IsLogged()
+    @ApplyUpdateUrlSwagger()
     public async changeUrl(
         @Body() body: UpdateUrlDto,
         @CurrentUser() user: User
@@ -75,7 +79,9 @@ export class UrlsController {
         }
 
         if (url?.user_id !== user.id) {
-            throw new ForbiddenException("You cannot update this url, since it isn't yours");
+            throw new ForbiddenException(
+                "You cannot update this url, since it isn't yours"
+            );
         }
 
         if (!body.newAlias && !body.newLongUrl) {
@@ -101,7 +107,11 @@ export class UrlsController {
 
     @Delete("/:alias")
     @IsLogged()
-    public async deleteUrl(@Param("alias") alias: string, @CurrentUser() user: User) {
+    @ApplyDeleteUrlSwagger()
+    public async deleteUrl(
+        @Param("alias") alias: string,
+        @CurrentUser() user: User
+    ) {
         const url = await this.urlsService.findUrlByAlias(alias);
 
         if (!url) {
@@ -109,7 +119,9 @@ export class UrlsController {
         }
 
         if (url?.user_id !== user.id) {
-            throw new ForbiddenException("You cannot delete this url, since it isn't yours");
+            throw new ForbiddenException(
+                "You cannot delete this url, since it isn't yours"
+            );
         }
 
         const deleted = await this.urlsService.softDeleteUrl(alias);
@@ -121,6 +133,7 @@ export class UrlsController {
 
     @Get("/me")
     @IsLogged()
+    @ApplyMyUrlsSwagger()
     public async getUrlsFromLoggedUser(@CurrentUser() user: User) {
         const urls = await this.urlsService.findByUserId(user.id);
 
