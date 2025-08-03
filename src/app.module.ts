@@ -4,8 +4,6 @@ import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { ScheduleModule } from "@nestjs/schedule";
 import { config } from "dotenv";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
 import { DatabaseModule } from "./database/database.module";
 import { LoaderModule } from "./modules/loader.module";
 import { buildRedisUri, RedisModule } from "./providers/redis/redis.module";
@@ -40,8 +38,6 @@ config();
 			}
 		}),
 		LoaderModule
-	],
-	controllers: [AppController],
-	providers: [AppService]
+	]
 })
 export class AppModule { }

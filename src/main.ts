@@ -1,3 +1,4 @@
+import { styleText } from "node:util";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -23,9 +24,10 @@ async function bootstrap() {
 	const port = process.env.PORT ?? 3000;
 	await app.listen(port);
 
-	console.log(`See Swagger here: http://localhost:${port}/api/dev`)
-	console.log("Ready");
-	console.log(`Listening on :${port}`);
+	console.log(
+		`${styleText("green", "[SWAGGER DOCS]:")} ${styleText("blueBright", `http://localhost:${port}/api/dev`)}`
+	);
+	console.log(styleText("cyanBright", `Listening on :${port}`));
 }
 
 bootstrap();

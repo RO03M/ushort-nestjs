@@ -37,10 +37,13 @@ No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz
 - Lefthook para executar hooks pre commit e pre push
 - BiomeJs para fazer o lint e a formação do projeto
 - Dockerfile e docker compose para subir o projeto com o ambiente já configurado
-- Testes e2e
-- Documentação dos endpoints com o Swagger
+- Testes de carga e e2e
+- Documentação dos endpoints com o Swagger (Acesse em http://localhost:3000/api/dev)
+- Validação de todos os endpoints com o a ajuda do class-validator
 
 # Como Executar
+
+### Docker
 
 ```sh
 # Clonando o repositório
@@ -59,4 +62,74 @@ docker compose up -d api
 docker compose exec -it api yarn migrate
 ```
 
+### Rodar local sem docker
+
+O projeto foi feito com o Node v24.4.1 e o yarn. Recomendo utilizar o nvm para facilitar a troca de versão
+
+```sh
+# Clonando o repositório
+git clone git@github.com:RO03M/ushort-nestjs.git
+
+# Acessando a pasta do projeto
+cd ushort-nestjs
+
+# Subindo postgres e redis
+docker compose up -d redis db
+
+# Criação do .env base
+cp .env.example .env
+
+# Usando a versão correta do node com nvm (Se não for utilizar o nvm pule essa etapa)
+nvm install && nvm use
+
+# Instalando o yarn
+npm install -g yarn
+
+# Criando node_modules
+yarn ci
+
+# Rodando migrations
+yarn migrate
+
+# Iniciando no modo dev
+yarn dev
+```
+
+### Rodando testes
+
+#### E2E
+
+Fiz os testes cores da aplicação:
+- Registrar usuário e logar
+- Criar url e conseguir acessar a mesma
+
+Para rodar eles, é só colar o seguinte comando:
+
+```sh
+yarn test:e2e
+```
+
+#### Carga
+
+Para fazer o teste de carga utilizei o k6 do Grafana, infelizmente para rodar esse é preciso baixar o binário https://grafana.com/docs/k6/latest/set-up/install-k6/
+
+Com ele baixado, é só rodar o seguinte comando:
+
+```sh
+k6 run test/stress/shorten-url-redirect.spec.ts
+```
+
+Esse teste de carga criar algumas urls no começo e depois sai acessando as mesmas, testando a capacidade da aplicação suportar alta demanda sem se sobrecarregar
+
+
+
 # Tecnologias Utilizadas
+
+- Node 24.4.1
+- NestJs
+- Typescript
+- Docker
+- Postgres
+- MikroORM
+- Redis 8
+- BullMQ
