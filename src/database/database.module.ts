@@ -1,6 +1,6 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Global, Module } from "@nestjs/common";
-import mikroOrmConfig from "src/mikro-orm.config";
+import mikroOrmConfig from "../mikro-orm.config";
 
 @Global()
 @Module({
@@ -11,4 +11,4 @@ import mikroOrmConfig from "src/mikro-orm.config";
 		})
 	]
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
