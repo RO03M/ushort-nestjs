@@ -14,9 +14,7 @@ async function bootstrap() {
 
 	const config = new DocumentBuilder()
 		.setTitle("Encurtador de URL")
-		.setDescription("The cats API description")
 		.setVersion("1.0")
-		.addTag("cats")
 		.addBearerAuth()
 		.build();
 	const documentFactory = () => SwaggerModule.createDocument(app, config);
