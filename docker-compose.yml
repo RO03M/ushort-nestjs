@@ -2,13 +2,13 @@ volumes:
   pgdata:
 
 services:
-  api01: &api
+  api:
     build: .
-    hostname: api01
+    hostname: api
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
-      DB_NAME: database
+      DB_NAME: ushort
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: admin
@@ -22,27 +22,6 @@ services:
     depends_on:
       - redis
       - db
-
-  api02:
-    <<: *api
-    hostname: api02
-    ports:
-      - "3002:3000"
-    
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - api01
-      - api02
-    ports:
-      - "9999:9999" 
-    deploy:
-      resources:
-        limits:
-          cpus: "0.17"
-          memory: "10MB"
 
   redis:
     image: redis:8

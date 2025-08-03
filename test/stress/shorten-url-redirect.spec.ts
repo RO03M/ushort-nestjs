@@ -61,6 +61,6 @@ export default function () {
 	const response = http.get(shortenUrl, { redirects: 0 });
 
 	check(response, {
-		"Http code is moved permanently (301)": () => response.status === 301
+		"Http code is temporary redirect (307)": () => response.status === 307
 	});
 }
