@@ -102,6 +102,15 @@ export class UrlsService {
         return url;
     }
 
+    public async findByUserId(userId: string) {
+        const urls = await this.em.createQueryBuilder(Url)
+            .select(["alias", "long_url", "visits", "created_at", "updated_at", "deleted_at"])
+            .where({ user_id: userId })
+            .execute("all", false);
+
+        return urls;
+    }
+
     public async updateUrl(oldAlias: string, url: Url) {
         const response = await this.em.createQueryBuilder(Url)
             .update({ alias: url.alias, long_url: url.long_url, updated_at: new Date() })

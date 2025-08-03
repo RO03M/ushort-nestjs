@@ -4,6 +4,7 @@ import {
     Controller,
     Delete,
     ForbiddenException,
+    Get,
     NotFoundException,
     Param,
     Patch,
@@ -115,6 +116,16 @@ export class UrlsController {
 
         return {
             success: deleted
+        };
+    }
+
+    @Get("/me")
+    @IsLogged()
+    public async getUrlsFromLoggedUser(@CurrentUser() user: User) {
+        const urls = await this.urlsService.findByUserId(user.id);
+
+        return {
+            urls
         };
     }
 }
