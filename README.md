@@ -1,6 +1,10 @@
 # Sobre
 A aplicação deve possibilitar o cadastro e usuários e a encurtação de urls (seja com um usuário autenticado ou não)
 
+No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz um vídeo demonstrando o comportamento da contabilização e tentando explicar a minha linha de raciocinio
+
+[Acesse o vídeo aqui](https://youtu.be/Es148LyWN6s)
+
 ### Comportamentos da aplicação
 
 - **Qualquer um** pode criar uma url encurtada, mesmo não estando autenticado, porém somente um usuário cadastrado pode editar, deletar, ou listar todas as suas urls já criadas
