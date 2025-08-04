@@ -8,8 +8,8 @@ export function ApplyLoginSwagger() {
             examples: {
                 login: {
                     value: {
-                        email: "romera@email.com",
-                        password: "senhapotente"
+                        email: "john@doe.com",
+                        password: "goodpassword123//@"
                     }
                 }
             }
