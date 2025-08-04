@@ -62,6 +62,8 @@ docker compose up -d api
 docker compose exec -it api yarn migrate
 ```
 
+**Após fazer o projeto rodar, você pode acessar o swagger na rota /api/dev (http://localhost:3000/api/dev)**
+
 ### Rodar local sem docker
 
 O projeto foi feito com o Node v24.4.1 e o yarn. Recomendo utilizar o nvm para facilitar a troca de versão
@@ -113,13 +115,15 @@ yarn test:e2e
 
 Para fazer o teste de carga utilizei o k6 do Grafana, infelizmente para rodar esse é preciso baixar o binário https://grafana.com/docs/k6/latest/set-up/install-k6/
 
-Com ele baixado, é só rodar o seguinte comando:
+Com ele baixado **e o projeto rodando na porta 3000**, é só rodar o seguinte comando:
 
 ```sh
 k6 run test/stress/shorten-url-redirect.spec.ts
 ```
 
 Esse teste de carga criar algumas urls no começo e depois sai acessando as mesmas, testando a capacidade da aplicação suportar alta demanda sem se sobrecarregar
+
+Se os testes falharem e o erro for "Request Failed", certifique-se que a aplicação está rodando corretamente
 
 # Design da aplicação
 
