@@ -145,3 +145,11 @@ Se os testes falharem e o erro for "Request Failed", certifique-se que a aplica�
 - MikroORM
 - Redis 8
 - BullMQ
+
+# Melhorias
+
+- Adição de usuário de administrador para gerenciar informações da aplicação e gerenciar urls
+- Rotas de analytics, para ver rotas mais acessadas, etc
+- Log de acessos para conseguirmos ver em gráficos informações do tráfego de uma rota
+- Cache mais inteligente das rotas, em sistemas com milhões de rotas devemos dar mais atenção para as rotas com maiores tráfegos, aumento o tempo de vida do cache entre outras coisas...
+- Workers dedicados para fazer a contabilização de acessos e logs
