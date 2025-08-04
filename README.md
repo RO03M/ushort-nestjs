@@ -1,7 +1,7 @@
 # Sobre
-A aplicação deve possibilitar o cadastro e usuários e a encurtação de urls (seja com um usuário autenticado ou não)
+A aplicação deve possibilitar o cadastro de usuários e a encurtação de urls (seja com um usuário autenticado ou não)
 
-No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz um vídeo demonstrando o comportamento da contabilização e tentando explicar a minha linha de raciocinio
+No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz um vídeo demonstrando o comportamento da contabilização e tentando explicar a minha linha de raciocínio
 
 [Acesse o vídeo aqui](https://youtu.be/Es148LyWN6s)
 
@@ -15,7 +15,7 @@ No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz
 
 ### Escalabilidade
 
-- A aplicação possuí um sistema de filas, task scheduling e cache para lidar com muitos acessos simultâneos, enquanto lida com a contagem de visitas na url e mantêm um tempo de retorno médio menor do que 50ms.
+- A aplicação possui um sistema de filas, task scheduling e cache para lidar com muitos acessos simultâneos, enquanto lida com a contagem de visitas na url e mantêm um tempo de retorno médio menor do que 50ms.
 
 - Foi feito um teste de estresse utilizando a ferramenta [k6](https://k6.io/) e obtive os seguintes resultados:
   - 500 usuários virtuais
@@ -35,11 +35,11 @@ No aspecto da <a href="#escalabilidade">escalabilidade</a> comentada abaixo, fiz
 ### Outros
 
 - Lefthook para executar hooks pre commit e pre push
-- BiomeJs para fazer o lint e a formação do projeto
+- BiomeJs para fazer o lint e a formatação do projeto
 - Dockerfile e docker compose para subir o projeto com o ambiente já configurado
 - Testes de carga e e2e
 - Documentação dos endpoints com o Swagger (Acesse em http://localhost:3000/api/dev)
-- Validação de todos os endpoints com o a ajuda do class-validator
+- Validação de todos os endpoints com a ajuda do class-validator
 
 # Como Executar
 
@@ -101,7 +101,7 @@ yarn dev
 
 #### E2E
 
-Fiz os testes cores da aplicação:
+Testes feitos:
 - Registrar usuário e logar
 - Criar url e conseguir acessar a mesma
 
@@ -121,7 +121,7 @@ Com ele baixado **e o projeto rodando na porta 3000**, é só rodar o seguinte c
 k6 run test/stress/shorten-url-redirect.spec.ts
 ```
 
-Esse teste de carga criar algumas urls no começo e depois sai acessando as mesmas, testando a capacidade da aplicação suportar alta demanda sem se sobrecarregar
+Esse teste de carga cria algumas urls no começo e depois sai acessando as mesmas, testando a capacidade de a aplicação suportar alta demanda sem se sobrecarregar
 
 Se os testes falharem e o erro for "Request Failed", certifique-se que a aplicação está rodando corretamente
 
@@ -151,5 +151,5 @@ Se os testes falharem e o erro for "Request Failed", certifique-se que a aplica�
 - Adição de usuário de administrador para gerenciar informações da aplicação e gerenciar urls
 - Rotas de analytics, para ver rotas mais acessadas, etc
 - Log de acessos para conseguirmos ver em gráficos informações do tráfego de uma rota
-- Cache mais inteligente das rotas, em sistemas com milhões de rotas devemos dar mais atenção para as rotas com maiores tráfegos, aumento o tempo de vida do cache entre outras coisas...
+- Cache mais inteligente das rotas, em sistemas com milhões de rotas devemos dar mais atenção para as rotas com maiores tráfego, aumentando o tempo de vida do cache entre outras coisas...
 - Workers dedicados para fazer a contabilização de acessos e logs
